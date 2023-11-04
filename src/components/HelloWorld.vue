@@ -2,7 +2,7 @@
   <div class="hello">
     <h1>{{ connectionText }}</h1>
     <input id="channel-id" type="text" v-model="channelId" />
-    <button @click="startCall">Call Channel</button>
+    <button @click="startCall" id="call-button">Call Channel</button>
   </div>
 </template>
 
