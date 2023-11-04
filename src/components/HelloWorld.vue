@@ -37,6 +37,7 @@ export default {
     this.peer.on("call", (call) => {
       const answerCall = confirm("Do you want to answer?");
       if (answerCall) {
+        this.getLocalStream()
         call.answer(this.localStream); // A
         call.on("stream", (stream) => {
           // C
