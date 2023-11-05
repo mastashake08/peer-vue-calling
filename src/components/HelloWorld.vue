@@ -9,7 +9,7 @@
 
     <p id="status"></p>
     <a id="map-link" target="_blank"></a>
-    <div id="map"  style="height: 100%; width: 100%"></div>
+    <div id="map"  height="600px" width="400px"></div>
   </div>
 </template>
 
@@ -185,13 +185,17 @@ li {
 a {
   color: #42b983;
 }
-html, body {
-          width: 100%;
-          height: 100%;
-          margin: 0;
-}
-#map {
+
+html,
+body {
+  margin: 0;
   height: 100%;
+}
+
+#map {
+  position: absolute;
+  top: 0;
+  bottom: 0;
   width: 100%;
 }
 </style>
