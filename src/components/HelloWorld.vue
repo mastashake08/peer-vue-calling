@@ -5,6 +5,7 @@
     <div class="buttons">
       <button @click="startCall" id="call-button">Call Channel</button>
       <button @click="sendLocation" id="location-button">Send Location</button>
+      <button @click="sendPaymentRequest" id="payment-request">Send Payment Request</button>
     </div>
 
     <p id="status"></p>
@@ -48,9 +49,11 @@ export default {
       console.log(connection)
       this.connection = connection
       this.connection.on('data', (data) => {
-        
         const status = document.querySelector("#status");
         const mapLink = document.querySelector("#map-link");
+        switch (data.type) {
+          case 'geo':{
+          
         const latitude = data.latitude;
         const longitude = data.longitude;
         // const center = transform([latitude, longitude], 'EPSG:4326', 'EPSG:3857');
@@ -73,8 +76,13 @@ export default {
         status.textContent = "";
         mapLink.href = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
         mapLink.textContent = `Latitude: ${latitude} °, Longitude: ${longitude} °`;
+        break;
+ }      case 'payment':{
+        mapLink.href = data.link;
+        mapLink.textContent = `Pay: ${data.link}`;
+        break;
+ }       }   
       })
-    
     })
     this.peer.on("call", (call) => {
       const answerCall = confirm("Do you want to answer?");
@@ -111,7 +119,14 @@ export default {
     success(position) {
       const latitude = position.coords.latitude;
       const longitude = position.coords.longitude;
-      this.connection.send({latitude: latitude, longitude: longitude})
+      this.connection.send({type: 'geo',latitude: latitude, longitude: longitude})
+    },
+    sendPaymentRequest() {
+      const link = prompt('Enter Cash App Link')
+      this.connection.send({
+        type: 'payment',
+        link: link
+      })
     },
     async startCall() {
       console.log('Starting Call')
@@ -130,13 +145,16 @@ export default {
     connectPeers() {
       this.connection = this.peer.connect(this.channelId)
       this.connection.on('data', (data) => {
-        console.log(data)
         const status = document.querySelector("#status");
         const mapLink = document.querySelector("#map-link");
+        switch (data.type) {
+          case 'geo':{
+          
         const latitude = data.latitude;
         const longitude = data.longitude;
         // const center = transform([latitude, longitude], 'EPSG:4326', 'EPSG:3857');
         // console.log('center is:', center);
+
         // const map = new Map({
         //   target: 'map',
         //   layers: [
@@ -149,11 +167,18 @@ export default {
         //     zoom: 4
         //   })
         // });
-        // console.table(center)
-        // console.log(map)
+        //console.log(map)
+        console.table([latitude, longitude])
         status.textContent = "";
         mapLink.href = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
         mapLink.textContent = `Latitude: ${latitude} °, Longitude: ${longitude} °`;
+        break;
+ }       case 'payment':{
+        mapLink.href = data.link;
+        mapLink.textContent = `Pay: ${data.link}`;
+        break;
+        }
+       }   
       })
     },
     async getLocalStream() {
