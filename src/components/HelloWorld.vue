@@ -9,17 +9,18 @@
 
     <p id="status"></p>
     <a id="map-link" target="_blank"></a>
-    <div id="map"  height="600px" width="400px"></div>
+    <div id="map"></div>
   </div>
 </template>
 
 <script>
 import { Peer } from 'peerjs'
-import Map from 'ol/Map';
-import View from 'ol/View';
-import TileLayer from 'ol/layer/Tile';
-import OSM from 'ol/source/OSM.js';
-import {useGeographic} from 'ol/proj'
+// import Map from 'ol/Map';
+// import View from 'ol/View';
+// import TileLayer from 'ol/layer/Tile';
+// import OSM from 'ol/source/OSM.js';
+// import {useGeographic, transform} from 'ol/proj'
+
 export default {
   name: 'HelloWorld',
   props: {
@@ -52,21 +53,23 @@ export default {
         const mapLink = document.querySelector("#map-link");
         const latitude = data.latitude;
         const longitude = data.longitude;
-        useGeographic()
-        console.log(data)
-        const map = new Map({
-          target: 'map',
-          layers: [
-            new TileLayer({
-              source: new OSM(),
-            }),
-          ],
-          view: new View({
-            center: [latitude, longitude],
-            zoom: 2
-          })
-        });
-        console.log(map)
+        // const center = transform([latitude, longitude], 'EPSG:4326', 'EPSG:3857');
+        // console.log('center is:', center);
+
+        // const map = new Map({
+        //   target: 'map',
+        //   layers: [
+        //     new TileLayer({
+        //       source: new OSM(),
+        //     }),
+        //   ],
+        //   view: new View({
+        //     center: center,
+        //     zoom: 4
+        //   })
+        // });
+        //console.log(map)
+        console.table([latitude, longitude])
         status.textContent = "";
         mapLink.href = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
         mapLink.textContent = `Latitude: ${latitude} °, Longitude: ${longitude} °`;
@@ -92,6 +95,7 @@ export default {
   mounted () {
     this.localAudio = new Audio()
     this.remoteAudio = new Audio()
+    // /useGeographic()
 
   },
   methods: {
@@ -131,21 +135,22 @@ export default {
         const mapLink = document.querySelector("#map-link");
         const latitude = data.latitude;
         const longitude = data.longitude;
-        useGeographic()
-        
-        const map = new Map({
-          target: 'map',
-          layers: [
-            new TileLayer({
-              source: new OSM(),
-            }),
-          ],
-          view: new View({
-            center: [latitude, longitude],
-            zoom: 2
-          })
-        });
-        console.log(map)
+        // const center = transform([latitude, longitude], 'EPSG:4326', 'EPSG:3857');
+        // console.log('center is:', center);
+        // const map = new Map({
+        //   target: 'map',
+        //   layers: [
+        //     new TileLayer({
+        //       source: new OSM(),
+        //     }),
+        //   ],
+        //   view: new View({
+        //     center: center,
+        //     zoom: 4
+        //   })
+        // });
+        // console.table(center)
+        // console.log(map)
         status.textContent = "";
         mapLink.href = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
         mapLink.textContent = `Latitude: ${latitude} °, Longitude: ${longitude} °`;
@@ -188,14 +193,12 @@ a {
 
 html,
 body {
-  margin: 0;
   height: 100%;
 }
 
 #map {
-  position: absolute;
-  top: 0;
-  bottom: 0;
+  
   width: 100%;
+  height: 400px;
 }
 </style>
