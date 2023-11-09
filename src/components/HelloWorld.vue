@@ -47,7 +47,7 @@ export default {
     this.localAudio = new Audio()
     this.remoteAudio = new Audio()
     // /useGeographic()
-    if(localStorage.channelId !== null && localStorage.channelId !== "undefined") {
+    if(localStorage.getItem('channelId') !== null) {
       this.channelId = localStorage.channelId
       this.setPeer()
     }
