@@ -3,9 +3,10 @@
     <h1>{{ connectionText }}</h1>
     <input id="channel-id" type="text" v-model="channelId" />
     <div class="buttons">
-      <button @click="startCall" id="call-button">Call Channel</button>
-      <button @click="sendLocation" id="location-button">Send Location</button>
-      <button @click="sendPaymentRequest" id="payment-request">Send Payment Request</button>
+      <button @click="setPeer" id="set-peer">Set Peer</button>
+      <button @click="startCall" id="call-button" v-if="peerSet">Call Channel</button>
+      <button @click="sendLocation" id="location-button" v-if="peerSet">Send Location</button>
+      <button @click="sendPaymentRequest" id="payment-request" v-if="peerSet">Send Payment Request</button>
     </div>
 
     <p id="status"></p>
@@ -37,13 +38,27 @@ export default {
       remoteStream: null,
       connectionText: 'Not connected. Start a call!',
       connection: null,
-      map: {}
+      map: {},
+      remoteId:null,
+      peerSet: false
     }
   },
-  created() {
-    this.peer = new Peer()
+  mounted () {
+    this.localAudio = new Audio()
+    this.remoteAudio = new Audio()
+    // /useGeographic()
+    if(localStorage.channelId !== null) {
+      this.channelId = localStorage.channelId
+      this.setPeer()
+    }
+  },
+  methods: {
+    setPeer() {
+    this.peer = new Peer(this.channelId)
     this.peer.on("open", () => {
       this.connectionText = `Your device ID is: ${this.peer.id}`;
+      this.peerSet = true
+      localStorage.channelId = this.channelId
     });
     this.peer.on('connection', (connection) => {
       console.log(connection)
@@ -100,13 +115,6 @@ export default {
       }
     });
   },
-  mounted () {
-    this.localAudio = new Audio()
-    this.remoteAudio = new Audio()
-    // /useGeographic()
-
-  },
-  methods: {
     sendLocation(){
       const status = document.querySelector("#status");
       if (!navigator.geolocation) {
@@ -130,9 +138,10 @@ export default {
     },
     async startCall() {
       console.log('Starting Call')
+      this.setPeer()
       await this.getLocalStream()
       this.connectPeers()
-      const call = this.peer.call(this.channelId, this.localStream); // A
+      const call = this.peer.call(this.remoteId, this.localStream); // A
       
       call.on("stream", (stream) => {
         // B
@@ -143,7 +152,8 @@ export default {
 
     },
     connectPeers() {
-      this.connection = this.peer.connect(this.channelId)
+      this.remoteId = prompt('Who are you trying to call?')
+      this.connection = this.peer.connect(this.remoteId)
       this.connection.on('data', (data) => {
         const status = document.querySelector("#status");
         const mapLink = document.querySelector("#map-link");
